@@ -1,4 +1,4 @@
-import random
+import random, pickle
 from os import system
 
 from counter_types import effectivity
@@ -12,13 +12,47 @@ def clean_screen():
 def get_player_profile(all_pokemons):
     
     return {
-        'player_name': input('Cual es tu nombre? '),
+        'player_name': input('Cual es tu nombre?: '),
         'pokemon_inventory': [random.choice(all_pokemons).copy() for a in range(3)],
         'combats': 0,
         'pokeballs': 0,
         'health_potion': 0,
         'coins': 0,
     }
+
+
+def load_profile(all_pokemons):
+
+    opcion = None
+
+    try:
+        while opcion not in ['s', 'n']:
+            opcion = input('\n¿Cargar partinda? [S/N]: ').lower()
+            if opcion not in ['s', 'n']:
+                clean_screen()
+                print('Opcion incorrecta\n')
+        
+        clean_screen()
+
+        if opcion == 's':
+            
+            with open('profile.pkl', 'rb') as profile:
+                input('¡Partida cargada!')
+                clean_screen()
+                return pickle.load(profile)
+
+        else:
+            return get_player_profile(all_pokemons)
+    
+    except FileNotFoundError:
+        input('Partida no encontrada\nGenerando nueva partida...')
+        clean_screen()
+        return get_player_profile(all_pokemons)
+
+
+def save_game(profile):
+    with open('profile.pkl', 'wb') as game:
+        pickle.dump(profile, game)
 
 
 def any_player_pokemon_lives(profile):
@@ -198,9 +232,11 @@ T - Tienda                         (Tienes {} Monedas)
 C - Curar pokemon                  (Tienes {} Posiones)
 I - Informacion de los pokemon
 
+G - Guardar y salir
+
 Elige una opcion: '''.format(profile['coins'], profile['health_potion'])\
         ).lower()
-        if player_opcion not in ['l', 't', 'c','i']:
+        if player_opcion not in ['l', 't', 'c','i', 'g']:
             clean_screen()
             print('Opcion incorrecta.\n')
         else:
@@ -468,14 +504,15 @@ def assign_enemy_pokemon(profile, all_pokemons):
 
 def main():
     clean_screen()
-    all_pokemons = get_all_pokemons()
-    profile = get_player_profile(all_pokemons)
+    all_pokemons = get_all_pokemons() 
+    profile = load_profile(all_pokemons)
+    exit_game = False
     
-    while any_player_pokemon_lives(profile):
+    while any_player_pokemon_lives(profile) and not exit_game:
         
         enemy_pokemon = assign_enemy_pokemon(profile, all_pokemons)
-        
-        opcion = player_opcion(profile) # l, t, c, i
+        save_game(profile)
+        opcion = player_opcion(profile) # l, t, c, i, g
             
         if opcion == 'l':
             fight(profile, enemy_pokemon)
@@ -486,10 +523,21 @@ def main():
         elif opcion == 'c':
             cure_pokemon(profile)
         
-        else:
+        elif opcion == 'i':
             all_pokemon_info(profile['pokemon_inventory'])
 
-    input('{} has perdido en el combate #{}\nEnter para comtinuar...'.format(profile['player_name'], profile['combats']))
+        elif opcion == 'g':
+            save_game(profile)
+            exit_game = True
+
+
+    if not exit_game:
+        system('rm profile.pkl')
+        input('{} has perdido en el combate #{}\n\nEnter para comtinuar...'.format(profile['player_name'], profile['combats']))
+    
+    else:
+        clean_screen()
+        input('¡Se guardo la partida!\nSaliendo...')
 
 
 if __name__ == '__main__':
