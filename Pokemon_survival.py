@@ -45,8 +45,10 @@ def load_profile(all_pokemons):
             return get_player_profile(all_pokemons)
     
     except FileNotFoundError:
+        
         input('Partida no encontrada\nGenerando nueva partida...')
         clean_screen()
+        
         return get_player_profile(all_pokemons)
 
 
