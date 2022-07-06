@@ -18,16 +18,24 @@ elements = ['acero', 'agua', 'bicho', 'dragon', 'electrico', 'fantasma', 'fuego'
 URL_BASE = 'https://www.pokexperto.net/index2.php?seccion=nds/nationaldex/movimientos_nivel&pk='
 
 def find_elements(pokemon_page):
+
     pokemon_elements = []
+    
     for element in elements:
+    
         if pokemon_page.html.find('td[class=bordeambos]:not(td[align="center"]) img[alt={}]'.format(element)):
+    
             pokemon_elements.append(element)
+    
     return pokemon_elements
 
 
 def find_attacks(pokepage):
+    
     attacks = []
+    
     for attack_item in pokepage.html.find(".pkmain")[-1].find("tr .check3"):
+    
         attack = {
             'name': attack_item.find('td', first=True).find('a', first=True).text,
             'type': attack_item.find("td")[1].find("img", first=True).attrs["alt"],
@@ -40,6 +48,7 @@ def find_attacks(pokepage):
 
 
 def get_pokemon(index):
+    
     url = '{}{}'.format(URL_BASE, index)
     session = HTMLSession()
     pokemon_page = session.get(url)
@@ -94,14 +103,18 @@ def get_all_pokemons():
         print('Todos los pokemons han sido descargados!')
     
     print('Lista de pokemons cargada!')
+    
     return all_pokemons
 
 def main():
+    
     lista = []
+    
     for i in get_all_pokemons():
         for a in i['attacks']:
             if not a['type'] in lista:
                 lista.append(a['type'])
+    
     print(lista)
 
 
