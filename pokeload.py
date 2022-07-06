@@ -1,6 +1,8 @@
 import pickle
-from requests_html import HTMLSession
 from os import system
+
+from requests_html import HTMLSession
+
 pokemon_base = {
     'name': "",
     'current_health': 100,
@@ -10,9 +12,12 @@ pokemon_base = {
     'attacks': None,
     'current_exp': 0
 }
+
 elements = ['acero', 'agua', 'bicho', 'dragon', 'electrico', 'fantasma', 'fuego', 'hada', 'hielo',
     'lucha', 'normal', 'planta', 'psiquico', 'roca', 'siniestro', 'tierra', 'veneno', 'volador']
+    
 URL_BASE = 'https://www.pokexperto.net/index2.php?seccion=nds/nationaldex/movimientos_nivel&pk='
+
 
 def find_elements(pokemon_page):
 
@@ -49,14 +54,21 @@ def get_pokemon(index):
     url = '{}{}'.format(URL_BASE, index)
     session = HTMLSession()
     pokemon_page = session.get(url)
+
     pokemon_name = pokemon_page.html.find('.mini', first=True).text.split('\n')[0]
+
     pokemon_types = find_elements(pokemon_page)
+
     attacks = find_attacks(pokemon_page)
+
     pokemon_info = pokemon_base.copy()
     pokemon_info['name'] = pokemon_name
     pokemon_info['type'] = pokemon_types
     pokemon_info['attacks'] = attacks
+
     return pokemon_info
+
+
 def load(i):
     i += 1
     i /= 151
@@ -66,6 +78,8 @@ def load(i):
     load = '[{}{}] {} %'.format('#' * i, '-' * (10 - i), percent)
     system('cls')
     print(load)
+
+
 def get_all_pokemons():
     
     try:
@@ -94,6 +108,7 @@ def get_all_pokemons():
     print('Lista de pokemons cargada!')
 
     return all_pokemons
+
 
 def main():
 
