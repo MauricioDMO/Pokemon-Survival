@@ -10,6 +10,7 @@ def clean_screen():
 
 
 def get_player_profile(all_pokemons):
+    
     return {
         'player_name': input('Cual es tu nombre? '),
         'pokemon_inventory': [random.choice(all_pokemons).copy() for a in range(3)],
@@ -61,7 +62,8 @@ def attacks_of_pokemon(pokemon):
     
     for attack in pokemon['attacks']:
         
-        if attack['min_level'] == '': attack['min_level'] = '1'
+        if attack['min_level'] == '':
+            attack['min_level'] = '1'
         
         if attack['damage'] > 0:
             if pokemon['level'] >= int(attack['min_level']):
@@ -74,6 +76,7 @@ def attacks_of_pokemon(pokemon):
             'min_level': '1',
             'damage': 10
         }]
+
     return attacks_available
 
 
@@ -99,11 +102,15 @@ def show_attacks(attacks, player_pokemon, enemy_pokemon):
 def player_attack(player_pokemon, enemy_pokemon):
     
     attacks = attacks_of_pokemon(player_pokemon)
+
     attack = show_attacks(attacks, player_pokemon, enemy_pokemon)
+
     current_damage = effectivity(attack, enemy_pokemon)
+
     enemy_pokemon['current_health'] -= current_damage
+
     clean_screen()
-    input('{} uso {} e infligio {} de daño'.format(player_pokemon['name'], attack['name'], current_damage))
+    input('{} uso {} -{} Hp'.format(player_pokemon['name'], attack['name'], current_damage))
     
     if enemy_pokemon['current_health'] < 0:
         enemy_pokemon['current_health'] = 0
@@ -115,7 +122,7 @@ def enemy_attack(player_pokemon, enemy_pokemon):
     current_damage = effectivity(attack, enemy_pokemon)
 
     clean_screen()
-    input('{} ha usado {} -{} hp'.format(enemy_pokemon['name'], attack['name'], current_damage))
+    input('{} ha usado {} -{} Hp'.format(enemy_pokemon['name'], attack['name'], current_damage))
     
     player_pokemon['current_health'] -= current_damage
     if player_pokemon['current_health'] < 0:
@@ -127,6 +134,7 @@ def battle(player_pokemon, enemy_pokemon):
 
 
 def pokemon_apears(enemy_pokemon):
+    
     pokemon_apears = '|¡Un {} ha aparecido!|\n'.format(get_pokemon_info(enemy_pokemon))
     new_combat = ']--- NUEVO COMBATE ---['
     space = round((len(pokemon_apears) - len(new_combat)) / 2)
@@ -143,12 +151,12 @@ def assign_items(profile, pokelog):
     log.append('¡Has obtenido {} monedas!'.format(coins))
     profile['coins'] += coins
 
-    luck = random.randint(1,6)
+    luck = random.randint(1, 10)
 
-    if luck == 1:
+    if luck  == 1:
         profile['pokeballs'] += 1
         log.append('¡Has encontrado una pokeball!')
-    elif luck == 2:
+    elif luck in range(2, 4):
         profile['health_potion'] += 1
         log.append('¡Has encontrado una pocion de vida!')
 
@@ -159,7 +167,7 @@ def assign_items(profile, pokelog):
             xp = random.randint(5, 10)
             pokemon['current_exp'] += xp
 
-            log.append('{} ha recibido {} de xp'.format(pokemon['name'], xp))
+            log.append(' - {} ha recibido {} de xp'.format(pokemon['name'], xp))
 
             xp_level_up = (pokemon['level'] ** 2) + 20
 
@@ -173,8 +181,10 @@ def assign_items(profile, pokelog):
                 input('¡{} ha subido a nivel {}!'.format(pokemon['name'], pokemon['level']))
     
     clean_screen()
+
     for element in log:
         print(element)
+
     input()
 
 
@@ -306,25 +316,36 @@ def shop(profile):
             try:
                 
                 opcion = int(opcion)
+
                 if opcion > 3:
+
                     clean_screen()
                     print('Opcion invalida.\n')
+
                 elif opcion == 0 and profile['coins'] >= 5:
+
                     clean_screen()
                     profile['coins'] -= 5
                     profile['health_potion'] += 1
+
                 elif opcion == 1 and profile['coins'] >= 12:
+
                     clean_screen()
                     profile['coins'] -= 12
                     profile['health_potion'] += 3
+
                 elif opcion == 2 and profile['coins'] >= 10:
+
                     clean_screen()
                     profile['coins'] -= 10
                     profile['pokeballs'] += 1
+
                 elif opcion == 3 and profile['coins'] >= 25:
+
                     clean_screen()
                     profile['coins'] -= 25
                     profile['pokeballs'] += 3
+
                 else:
                     clean_screen()
                     print('Dinero insuficiente...\n')
@@ -335,8 +356,11 @@ def shop(profile):
 
 
 def cure_pokemon(profile):
+    
     clean_screen()
+
     while True:
+
         count = 0
         injured_pokemons = []
         print('Estas viento tu mochila              Pociones: {}\n'.format(profile['health_potion']))
@@ -345,6 +369,7 @@ def cure_pokemon(profile):
         for pokemon in profile['pokemon_inventory']:
             
             if pokemon['current_health'] < pokemon['base_health']:
+
                 injured_pokemons.append(pokemon)
                 print('{} - {} | Hp {}/{}'.format(count, pokemon['name'],
                     pokemon['current_health'], pokemon['base_health']))
@@ -352,15 +377,19 @@ def cure_pokemon(profile):
 
         if count == 0:
             print('¡Todos los pokemons estan sanos!')
+
         print('\nS - Salir\n')
         opcion = input('Eliges: ').lower()
 
         if opcion == 's': return
+
         try:
+
             opcion = int(opcion)
             pokemon = injured_pokemons[opcion]
             
             if profile['health_potion'] > 0:
+
                 pokemon['current_health'] += 50
                 profile['health_potion'] -= 1
                 
@@ -378,14 +407,21 @@ def cure_pokemon(profile):
 
 
 def all_pokemon_info(pokemons):
+
     clean_screen()
+
     while True:
+
         print('Pokemons en tu inventario:\n')
         count = 0
+
         for pokemon in pokemons:
+
             print('{} - {}'.format(count, pokemon['name']))
             count += 1
+
         print('\nS - Salir\n')
+
         opcion = input('Eliges: ').lower()
 
         if opcion == 's': return
