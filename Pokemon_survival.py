@@ -107,7 +107,7 @@ def attacks_of_pokemon(pokemon):
                 
     if len(attacks_available) == 0:
         attacks_available = [{
-            'name': 'golpe',
+            'name': 'Golpe',
             'type': 'normal',
             'min_level': '1',
             'damage': 10
